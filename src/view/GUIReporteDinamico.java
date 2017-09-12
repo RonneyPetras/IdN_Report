@@ -14,8 +14,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.SpringLayout;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSetMetaData;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -28,7 +32,7 @@ import net.sf.jasperreports.view.JasperViewer;
  * @author petra
  */
 public class GUIReporteDinamico extends javax.swing.JFrame {
-
+    private DefaultListModel<String> lstSelecionModel = new DefaultListModel<String>();
     /**
      * Creates new form GUIReporteDinamico
      */
@@ -50,12 +54,13 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         lstTabla = new javax.swing.JList<>();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
-        lbCol = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        lstSelecion = new javax.swing.JList<>();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        lstConsulta = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -68,6 +73,12 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
             String[] strings = { "Atributos..." };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
+        });
+        lstCol.setToolTipText("");
+        lstCol.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lstColMouseClicked(evt);
+            }
         });
         jScrollPane1.setViewportView(lstCol);
 
@@ -83,6 +94,7 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        lstTabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstTabla.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lstTablaMouseClicked(evt);
@@ -90,78 +102,74 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(lstTabla);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "=", "!=", "<", ">", "<=", ">=" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("Where");
-
-        lbCol.setText("-");
-
         jLabel3.setText("Tablas");
 
-        jLabel4.setText("Columnas");
+        jLabel4.setText("Selecione Columnas");
+
+        lstSelecion.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "selecion..." };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(lstSelecion);
+
+        jLabel5.setText("Columnas Selecionadas");
+
+        lstConsulta.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(lstConsulta);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(235, 235, 235))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(lbCol, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(lbCol)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
-                .addGap(22, 22, 22))
+                        .addComponent(jScrollPane4))
+                    .addComponent(jLabel4)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 
@@ -187,6 +195,7 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void lstTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstTablaMouseClicked
+        
         String tabla = "";
         ConexionBD conn = new ConexionBD();
         
@@ -207,55 +216,51 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(GUIReporteDinamico.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        this.lbCol.setText(tabla);
     }//GEN-LAST:event_lstTablaMouseClicked
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         String sql = "";
-        String tabla = "";
-        String columna = "";
+        String tabla ="";
+        String colunmList = "";
         ConexionBD conn = new ConexionBD();
-        Connection con;
-        JasperReport reporte;
-        
+        DefaultListModel<String> lstConsultaModel = new DefaultListModel<String>();
+        this.lstConsulta.setModel(lstConsultaModel);
         ResultSet rs = null;
-        DefaultListModel<String> dfm = new DefaultListModel<String>();
+        ResultSetMetaData rsmd = null;
+       
+        for(int i=0; i<this.lstSelecion.getModel().getSize(); i++){
+            colunmList += this.lstSelecion.getModel().getElementAt(i) + ",";
+        }
+        colunmList = colunmList.substring(0,colunmList.length() - 1);
         
         tabla = this.lstTabla.getSelectedValue();
-        columna = this.lstCol.getSelectedValue();
+
+        sql = "SELECT " + colunmList + " FROM " + tabla;
         
-        
-        sql = "SELECT " + columna + " FROM "+ tabla;
         System.out.println(sql);
+        
         try {
             rs = conn.executeQueryStatement(sql);
-            while(rs.next()){
-                System.out.println(rs.getString(1));
+            rsmd = rs.getMetaData();
+            
+            while( rs.next() ){
+                for(int i=0; i<rsmd.getColumnCount();i++){
+                    lstConsultaModel.addElement(rs.getString(i+1));
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(GUIReporteDinamico.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        /*try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","apo","apo");
-        
-            reporte = (JasperReport) JRLoader.loadObjectFromFile("C:\\Users\\petra\\Documents\\NetBeansProjects\\IdN_Report\\ReportePizzeria.jasper");
-            //reporte.getParameters();
-            JasperPrint print = JasperFillManager.fillReport(reporte, null, con);
-            JasperViewer ver = new JasperViewer (print,false);
-            ver.setTitle("Prueba Reporte");
-            ver.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            
-            ver.setVisible(true);
-            
-            
-        } catch (Exception ex) {
-            Logger.getLogger(GUIReporte.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        */
+        this.lstSelecionModel.clear();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void lstColMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstColMouseClicked
+
+        this.lstSelecion.setModel(lstSelecionModel);
+        lstSelecionModel.addElement(this.lstCol.getSelectedValue());
+        
+    }//GEN-LAST:event_lstColMouseClicked
 
     /**
      * @param args the command line arguments
@@ -294,15 +299,16 @@ public class GUIReporteDinamico extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JLabel lbCol;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JList<String> lstCol;
+    private javax.swing.JList<String> lstConsulta;
+    private javax.swing.JList<String> lstSelecion;
     private javax.swing.JList<String> lstTabla;
     // End of variables declaration//GEN-END:variables
 }
